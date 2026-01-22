@@ -1,0 +1,2 @@
+# Analysis-of-Linear-and-Non-Linear-Dimensionality-Reduction-for-Face-Recognition-and-Verification
+This project compares linear (PCA via SVD) and non-linear (Autoencoder) dimensionality reduction techniques for Face Recognition and Verification. Features are evaluated using SVM and Neural Networks, with classification metrics and similarity measures to assess performance and efficiency for real-world applications.
