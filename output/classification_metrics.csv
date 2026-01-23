@@ -1,0 +1,5 @@
+Feature,Classifier,Accuracy
+PCA,SVM,0.8103
+PCA,NN,0.8205
+Autoencoder,SVM,0.3359
+Autoencoder,NN,0.3513
