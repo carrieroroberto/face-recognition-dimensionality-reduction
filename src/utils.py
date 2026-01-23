@@ -12,48 +12,12 @@ from sklearn.preprocessing import label_binarize
 from sklearn.manifold import TSNE
 import config
 
-def load_and_preprocess_data():
-    """Carica il dataset LFW, normalizza e divide in Train/Test."""
-    print("Caricamento dataset LFW...")
-
-    # Carichiamo il dataset
-    lfw_people = fetch_lfw_people(
-        min_faces_per_person=config.MIN_FACES_PER_PERSON,
-        resize=0.4,  # Ridimensiona per mantenere IMAGE_SHAPE (50x37)
-        color=False
-    )
-
-    # Informazioni dataset
-    X = lfw_people.data
-    y = lfw_people.target
-    target_names = lfw_people.target_names
-    images = lfw_people.images
-    n_samples, h, w = images.shape
-
-    # Normalizzazione [0, 1]
-    X = X / 255.0
-
-    # Split Train/Test stratificato (mantiene le proporzioni delle classi)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, stratify=y, random_state=config.RANDOM_STATE
-    )
-
-    return {
-        'X_train': X_train, 'X_test': X_test,
-        'y_train': y_train, 'y_test': y_test,
-        'target_names': target_names,
-        'image_shape': (h, w),
-        'images': images
-    }
-
 def plot_dataset_stats(data_dict):
-    """Genera output grafici per l'EDA (Exploratory Data Analysis)."""
     target_names = data_dict['target_names']
     y_train = data_dict['y_train']
     h, w = data_dict['image_shape']
     X_train = data_dict['X_train']
 
-    # 1. Distribuzione Classi
     plt.figure(figsize=(10, 5))
     unique, counts = np.unique(y_train, return_counts=True)
     sns.barplot(x=[target_names[i] for i in unique], y=counts, palette='viridis')
@@ -63,7 +27,6 @@ def plot_dataset_stats(data_dict):
     plt.savefig(f"{config.OUTPUT_PATH}/class_distribution.png", bbox_inches='tight')
     plt.close()
 
-    # 2. La "Faccia Media" (Concetto matematico importante per PCA)
     plt.figure(figsize=(4, 4))
     mean_face = np.mean(X_train, axis=0).reshape(h, w)
     plt.imshow(mean_face, cmap='gray')
@@ -75,11 +38,9 @@ def plot_dataset_stats(data_dict):
     print(f"Grafici salvati in {config.OUTPUT_PATH}")
 
 def plot_eigenfaces(pca_model, h, w, n_top=12):
-    """Visualizza le prime n componenti principali come immagini."""
     plt.figure(figsize=(12, 8))
     for i in range(n_top):
         plt.subplot(3, 4, i + 1)
-        # Ogni riga di Vt è una "faccia fantasma"
         eigenface = pca_model.components_[i].reshape(h, w)
         plt.imshow(eigenface, cmap='gray')
         plt.title(f"Eigenface {i+1}")
@@ -89,7 +50,6 @@ def plot_eigenfaces(pca_model, h, w, n_top=12):
     plt.close()
 
 def plot_scree_plot(pca_model):
-    """Grafico della varianza spiegata cumulativa."""
     plt.figure(figsize=(8, 5))
     cum_variance = np.cumsum(pca_model.explained_variance_ratio_)
     plt.plot(range(1, len(cum_variance) + 1), cum_variance, marker='o', linestyle='--')
@@ -101,7 +61,6 @@ def plot_scree_plot(pca_model):
     plt.close()
 
 def plot_training_loss(loss_history):
-    """Visualizza l'andamento della loss dell'Autoencoder."""
     plt.figure(figsize=(8, 5))
     plt.plot(loss_history, color='tab:orange', lw=2)
     plt.title("Autoencoder Training Loss")
@@ -112,26 +71,19 @@ def plot_training_loss(loss_history):
     plt.close()
 
 def plot_reconstruction_comparison(original, pca_rec, ae_rec, h, w, n_images=5):
-    """
-    Mostra un confronto visivo tra immagini originali e ricostruite.
-    original, pca_rec, ae_rec: matrici (N, pixels)
-    """
     plt.figure(figsize=(15, 3 * n_images))
 
     for i in range(n_images):
-        # Originale
         plt.subplot(n_images, 3, i * 3 + 1)
         plt.imshow(original[i].reshape(h, w), cmap='gray')
         plt.title("Originale")
         plt.axis('off')
 
-        # Ricostruzione PCA
         plt.subplot(n_images, 3, i * 3 + 2)
         plt.imshow(pca_rec[i].reshape(h, w), cmap='gray')
         plt.title(f"PCA (SVD k={config.N_COMPONENTS_PCA})")
         plt.axis('off')
 
-        # Ricostruzione Autoencoder
         plt.subplot(n_images, 3, i * 3 + 3)
         plt.imshow(ae_rec[i].reshape(h, w), cmap='gray')
         plt.title(f"Autoencoder (Latent={config.LATENT_DIM_AE})")
@@ -142,7 +94,6 @@ def plot_reconstruction_comparison(original, pca_rec, ae_rec, h, w, n_images=5):
     print(f"Confronto ricostruzioni salvato in {config.OUTPUT_PATH}")
 
 def plot_confusion_matrix(y_true, y_pred, target_names, model_name):
-    """Visualizza la matrice di confusione con heatmap."""
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
@@ -154,8 +105,6 @@ def plot_confusion_matrix(y_true, y_pred, target_names, model_name):
     plt.close()
 
 def plot_roc_curves(y_test, y_score, n_classes, model_name):
-    """Genera le curve ROC per ogni classe (One-vs-Rest)."""
-    # Binarizzazione per multi-classe
     y_test_bin = label_binarize(y_test, classes=range(n_classes))
 
     fpr = dict()
@@ -179,7 +128,6 @@ def plot_roc_curves(y_test, y_score, n_classes, model_name):
     plt.close()
 
 def plot_tsne_comparison(pca_features, ae_features, labels, target_names):
-    """Visualizza i cluster di PCA vs Autoencoder in 2D."""
     tsne = TSNE(n_components=2, random_state=config.RANDOM_STATE)
 
     plt.figure(figsize=(16, 7))
@@ -197,7 +145,6 @@ def plot_tsne_comparison(pca_features, ae_features, labels, target_names):
     plt.close()
 
 def save_model(model, name):
-    """Salva il modello addestrato."""
     if isinstance(model, torch.nn.Module):
         path = os.path.join(config.MODELS_PATH, f"{name}.pt")
         torch.save(model.state_dict(), path)
