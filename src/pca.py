@@ -95,7 +95,8 @@ def run_pca_experiments(X_train, X_test, y_train, y_test, h, w, n_components_lis
             "svm_test_acc": acc
         }
 
-    plt.figure(figsize=(10, 6))
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.figure(figsize=config.PLOT_FIGSIZE_MEDIUM)
 
     ax1 = plt.gca()
     ax1.set_xlabel("Numero Componenti Principali")

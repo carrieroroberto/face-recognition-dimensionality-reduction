@@ -1,0 +1,3 @@
+,auc,eer,threshold
+PCA_cosine,0.574492,0.452,0.044764842838048935
+Autoencoder_cosine,0.630776,0.418,0.13497768342494965

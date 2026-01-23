@@ -5,144 +5,150 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import torch
-from sklearn.datasets import fetch_lfw_people
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, roc_curve, auc
-from sklearn.preprocessing import label_binarize
+from sklearn.metrics import confusion_matrix
 from sklearn.manifold import TSNE
 import config
 
+
+def _setup_style():
+    plt.style.use('seaborn-v0_8-whitegrid')
+
+
 def plot_dataset_stats(data_dict):
+    _setup_style()
     target_names = data_dict['target_names']
     y_train = data_dict['y_train']
     h, w = data_dict['image_shape']
     X_train = data_dict['X_train']
 
-    plt.figure(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=config.PLOT_FIGSIZE_MEDIUM)
     unique, counts = np.unique(y_train, return_counts=True)
-    sns.barplot(x=[target_names[i] for i in unique], y=counts, palette='viridis')
-    plt.title("Distribuzione delle Classi (Train Set)")
-    plt.xticks(rotation=45)
-    plt.ylabel("Numero di Immagini")
-    plt.savefig(f"{config.OUTPUT_PATH}/class_distribution.png", bbox_inches='tight')
+    sns.barplot(x=[target_names[i] for i in unique], y=counts, palette='viridis', ax=ax)
+    ax.set_title("Distribuzione delle Classi (Train Set)", fontsize=12, fontweight='bold')
+    ax.set_ylabel("Numero di Immagini", fontsize=11)
+    plt.xticks(rotation=45, ha='right', fontsize=9)
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/class_distribution.png", dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
 
-    plt.figure(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=(5, 5))
     mean_face = np.mean(X_train, axis=0).reshape(h, w)
-    plt.imshow(mean_face, cmap='gray')
-    plt.title("Faccia Media del Dataset")
-    plt.axis('off')
-    plt.savefig(f"{config.OUTPUT_PATH}/mean_face.png", bbox_inches='tight')
+    ax.imshow(mean_face, cmap='gray')
+    ax.set_title("Faccia Media del Dataset", fontsize=12, fontweight='bold')
+    ax.axis('off')
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/mean_face.png", dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
 
-    print(f"Grafici salvati in {config.OUTPUT_PATH}")
+    print(f"  Grafici salvati in {config.OUTPUT_PATH}")
+
 
 def plot_eigenfaces(pca_model, h, w, n_top=12):
-    plt.figure(figsize=(12, 8))
-    for i in range(n_top):
-        plt.subplot(3, 4, i + 1)
+    _setup_style()
+    fig, axes = plt.subplots(3, 4, figsize=(12, 9))
+    axes = axes.flatten()
+
+    for i in range(min(n_top, len(pca_model.components_))):
         eigenface = pca_model.components_[i].reshape(h, w)
-        plt.imshow(eigenface, cmap='gray')
-        plt.title(f"Eigenface {i+1}")
-        plt.axis('off')
-    plt.suptitle("Prime Componenti Principali (SVD)")
-    plt.savefig(f"{config.OUTPUT_PATH}/eigenfaces.png", bbox_inches='tight')
+        axes[i].imshow(eigenface, cmap='gray')
+        axes[i].set_title(f"Eigenface {i+1}", fontsize=10)
+        axes[i].axis('off')
+
+    plt.suptitle("Prime Componenti Principali (SVD)", fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/eigenfaces.png", dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
+
 
 def plot_scree_plot(pca_model):
-    plt.figure(figsize=(8, 5))
+    _setup_style()
+    fig, ax = plt.subplots(figsize=config.PLOT_FIGSIZE_SMALL)
     cum_variance = np.cumsum(pca_model.explained_variance_ratio_)
-    plt.plot(range(1, len(cum_variance) + 1), cum_variance, marker='o', linestyle='--')
-    plt.xlabel("Numero di Componenti")
-    plt.ylabel("Varianza Spiegata Cumulativa")
-    plt.title("Analisi della Varianza (Scree Plot)")
-    plt.grid(True)
-    plt.savefig(f"{config.OUTPUT_PATH}/scree_plot.png", bbox_inches='tight')
+    ax.plot(range(1, len(cum_variance) + 1), cum_variance, marker='o', linestyle='--', markersize=4)
+    ax.set_xlabel("Numero di Componenti", fontsize=11)
+    ax.set_ylabel("Varianza Spiegata Cumulativa", fontsize=11)
+    ax.set_title("Analisi della Varianza (Scree Plot)", fontsize=12, fontweight='bold')
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/scree_plot.png", dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
+
 
 def plot_training_loss(loss_history):
-    plt.figure(figsize=(8, 5))
-    plt.plot(loss_history, color='tab:orange', lw=2)
-    plt.title("Autoencoder Training Loss")
-    plt.xlabel("Epoca")
-    plt.ylabel("MSE Loss")
-    plt.grid(True)
-    plt.savefig(f"{config.OUTPUT_PATH}/ae_loss.png", bbox_inches='tight')
+    _setup_style()
+    fig, ax = plt.subplots(figsize=config.PLOT_FIGSIZE_SMALL)
+    ax.plot(loss_history, color='tab:orange', lw=2)
+    ax.set_title("Autoencoder Training Loss", fontsize=12, fontweight='bold')
+    ax.set_xlabel("Epoca", fontsize=11)
+    ax.set_ylabel("MSE Loss", fontsize=11)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/ae_loss.png", dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
+
 
 def plot_reconstruction_comparison(original, pca_rec, ae_rec, h, w, n_images=5):
-    plt.figure(figsize=(15, 3 * n_images))
+    _setup_style()
+    fig, axes = plt.subplots(n_images, 3, figsize=(10, 3 * n_images))
 
     for i in range(n_images):
-        plt.subplot(n_images, 3, i * 3 + 1)
-        plt.imshow(original[i].reshape(h, w), cmap='gray')
-        plt.title("Originale")
-        plt.axis('off')
+        axes[i, 0].imshow(original[i].reshape(h, w), cmap='gray')
+        axes[i, 0].set_title("Originale" if i == 0 else "", fontsize=10)
+        axes[i, 0].axis('off')
 
-        plt.subplot(n_images, 3, i * 3 + 2)
-        plt.imshow(pca_rec[i].reshape(h, w), cmap='gray')
-        plt.title(f"PCA (SVD k={config.N_COMPONENTS_PCA})")
-        plt.axis('off')
+        axes[i, 1].imshow(pca_rec[i].reshape(h, w), cmap='gray')
+        axes[i, 1].set_title(f"PCA" if i == 0 else "", fontsize=10)
+        axes[i, 1].axis('off')
 
-        plt.subplot(n_images, 3, i * 3 + 3)
-        plt.imshow(ae_rec[i].reshape(h, w), cmap='gray')
-        plt.title(f"Autoencoder (Latent={config.LATENT_DIM_AE})")
-        plt.axis('off')
+        axes[i, 2].imshow(ae_rec[i].reshape(h, w), cmap='gray')
+        axes[i, 2].set_title(f"Autoencoder" if i == 0 else "", fontsize=10)
+        axes[i, 2].axis('off')
 
-    plt.savefig(f"{config.OUTPUT_PATH}/reconstruction_comparison.png", bbox_inches='tight')
+    plt.suptitle("Confronto Ricostruzioni", fontsize=12, fontweight='bold')
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/reconstruction_comparison.png", dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
-    print(f"Confronto ricostruzioni salvato in {config.OUTPUT_PATH}")
+    print(f"  Confronto ricostruzioni salvato")
+
 
 def plot_confusion_matrix(y_true, y_pred, target_names, model_name):
+    _setup_style()
     cm = confusion_matrix(y_true, y_pred)
-    plt.figure(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=config.PLOT_FIGSIZE_MEDIUM)
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=target_names, yticklabels=target_names)
-    plt.title(f"Confusion Matrix: {model_name}")
-    plt.ylabel('Classe Reale')
-    plt.xlabel('Classe Predetta')
-    plt.savefig(f"{config.OUTPUT_PATH}/cm_{model_name.lower().replace(' ', '_')}.png", bbox_inches='tight')
+                xticklabels=target_names, yticklabels=target_names, ax=ax)
+    ax.set_title(f"Confusion Matrix: {model_name}", fontsize=12, fontweight='bold')
+    ax.set_ylabel('Classe Reale', fontsize=11)
+    ax.set_xlabel('Classe Predetta', fontsize=11)
+    plt.xticks(rotation=45, ha='right', fontsize=9)
+    plt.yticks(rotation=0, fontsize=9)
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/cm_{model_name.lower().replace(' ', '_')}.png",
+                dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
 
-def plot_roc_curves(y_test, y_score, n_classes, model_name):
-    y_test_bin = label_binarize(y_test, classes=range(n_classes))
-
-    fpr = dict()
-    tpr = dict()
-    roc_auc = dict()
-
-    for i in range(n_classes):
-        fpr[i], tpr[i], _ = roc_curve(y_test_bin[:, i], y_score[:, i])
-        roc_auc[i] = auc(fpr[i], tpr[i])
-
-    plt.figure(figsize=(10, 8))
-    for i in range(n_classes):
-        plt.plot(fpr[i], tpr[i], label=f'Classe {i} (AUC = {roc_auc[i]:.2f})')
-
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title(f'ROC Curves: {model_name}')
-    plt.legend(loc="lower right")
-    plt.savefig(f"{config.OUTPUT_PATH}/roc_{model_name.lower().replace(' ', '_')}.png", bbox_inches='tight')
-    plt.close()
 
 def plot_tsne_comparison(pca_features, ae_features, labels, target_names):
-    tsne = TSNE(n_components=2, random_state=config.RANDOM_STATE)
-
-    plt.figure(figsize=(16, 7))
+    _setup_style()
+    fig, axes = plt.subplots(1, 2, figsize=config.PLOT_FIGSIZE_LARGE)
 
     for i, (name, feat) in enumerate([("PCA", pca_features), ("Autoencoder", ae_features)]):
+        tsne = TSNE(n_components=2, random_state=config.RANDOM_STATE, perplexity=30)
         X_2d = tsne.fit_transform(feat)
-        plt.subplot(1, 2, i + 1)
+
         for g in np.unique(labels):
             idx = np.where(labels == g)
-            plt.scatter(X_2d[idx, 0], X_2d[idx, 1], label=target_names[g], alpha=0.6)
-        plt.title(f"t-SNE Projection: {name} Features")
-        if i == 1: plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            axes[i].scatter(X_2d[idx, 0], X_2d[idx, 1], label=target_names[g], alpha=0.6, s=20)
 
-    plt.savefig(f"{config.OUTPUT_PATH}/tsne_comparison.png", bbox_inches='tight')
+        axes[i].set_title(f"t-SNE: {name} Features", fontsize=12, fontweight='bold')
+        axes[i].set_xlabel("t-SNE 1", fontsize=10)
+        axes[i].set_ylabel("t-SNE 2", fontsize=10)
+
+    axes[1].legend(bbox_to_anchor=(1.02, 1), loc='upper left', fontsize=9)
+    plt.tight_layout()
+    plt.savefig(f"{config.OUTPUT_PATH}/tsne_comparison.png", dpi=config.PLOT_DPI, bbox_inches='tight')
     plt.close()
+
 
 def save_model(model, name):
     if isinstance(model, torch.nn.Module):
@@ -151,4 +157,4 @@ def save_model(model, name):
     else:
         path = os.path.join(config.MODELS_PATH, f"{name}.joblib")
         joblib.dump(model, path)
-    print(f"Modello salvato: {path}")
+    print(f"  Modello salvato: {path}")

@@ -136,11 +136,8 @@ def compare_pca_vs_autoencoder_ablation(X_train, X_test, y_train, y_test,
     df_results = pd.DataFrame(results)
 
     if verbose:
-        print("\n" + "="*70)
         print("RIEPILOGO RISULTATI COMPARATIVI")
-        print("="*70)
         print(df_results.to_string(index=False))
-        print("="*70 + "\n")
 
     return df_results
 
@@ -206,11 +203,8 @@ def analyze_classifier_comparison(X_train_pca, X_test_pca, X_train_ae, X_test_ae
     df_results = pd.DataFrame(results)
 
     if verbose:
-        print("\n" + "="*70)
         print("RIEPILOGO CONFRONTO CLASSIFICATORI")
-        print("="*70)
         print(df_results.to_string(index=False))
-        print("="*70 + "\n")
 
     return df_results
 

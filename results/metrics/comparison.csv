@@ -1,0 +1,5 @@
+model,features,accuracy,precision_macro,recall_macro,f1_macro,precision_weighted,recall_weighted,f1_weighted,roc_auc_macro,roc_auc_weighted
+SVM,Autoencoder_175,0.8111,0.8223,0.7467,0.7751,0.8133,0.8111,0.8055,0.9699,0.9665
+SVM,PCA_175,0.8037,0.7801,0.7592,0.7641,0.8054,0.8037,0.8019,0.9582,0.9537
+NN,PCA_175,0.7926,0.7771,0.7575,0.7585,0.8002,0.7926,0.7923,0.9573,0.9529
+NN,Autoencoder_175,0.7852,0.7555,0.7806,0.7612,0.7919,0.7852,0.7854,0.9545,0.9534

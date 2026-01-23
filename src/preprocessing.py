@@ -102,7 +102,7 @@ def compute_dataset_statistics(X, y, target_names):
     return stats
 
 def print_dataset_statistics(stats):
-    print("STATISTICHE DESCRITTIVE DEL DATASET")
+    print("\nSTATISTICHE DESCRITTIVE DEL DATASET")
     print(f"Numero totale campioni: {stats['n_samples']}")
     print(f"Numero features: {stats['n_features']}")
     print(f"Numero classi: {stats['n_classes']}")
