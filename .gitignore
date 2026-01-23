@@ -207,6 +207,8 @@ marimo/_lsp/
 __marimo__/
 
 .idea/
-.idea*
 .vscode/
-,vscode*
+__pycache__/
+*.pyc
+.env
+.DS_Store
