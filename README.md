@@ -109,7 +109,3 @@ Key parameters in `config.py`:
 | NN | Autoencoder | 0.8178 | 0.7849 | 0.8200 | 0.9720 | 0.7981 |
 | SVM | PCA | 0.8062 | 0.7423 | 0.8015 | 0.9800 | 0.8146 |
 | SVM | Autoencoder | 0.7984 | 0.7474 | 0.7939 | 0.9710 | 0.7786 |
-
-## License
-
-This project is developed for educational purposes as part of the SMM-AI course at Politecnico di Bari.
