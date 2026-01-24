@@ -56,7 +56,7 @@ def run_pca_experiments(n_components_list, X_train, X_test, y_train, y_test, h, 
         plot_eigenfaces(pca, h, w, n_top=min(12, n_comp))
         plot_scree_plot(pca)
 
-        svm_model = SVC(kernel='rbf')
+        svm_model = SVC(kernel="rbf")
         svm_model.fit(X_train_pca, y_train)
 
         y_pred = svm_model.predict(X_test_pca)

@@ -69,9 +69,9 @@ class Autoencoder(nn.Module):
         criterion = nn.MSELoss()
         optimizer = optim.Adam(self.parameters(), lr=lr, weight_decay=weight_decay)
 
-        history = {'train_loss': [], 'val_loss': []}
+        history = {"train_loss": [], "val_loss": []}
         
-        best_val_loss = float('inf')
+        best_val_loss = float("inf")
         patience_counter = 0
         best_model_weights = copy.deepcopy(self.state_dict())
 
@@ -90,7 +90,7 @@ class Autoencoder(nn.Module):
                 train_loss += loss.item() * batch_X.size(0)
             
             avg_train_loss = train_loss / len(train_loader.dataset)
-            history['train_loss'].append(avg_train_loss)
+            history["train_loss"].append(avg_train_loss)
 
             avg_val_loss = 0.0
             if val_loader:
@@ -103,7 +103,7 @@ class Autoencoder(nn.Module):
                         val_loss_accum += loss.item() * batch_X.size(0)
                 
                 avg_val_loss = val_loss_accum / len(val_loader.dataset)
-                history['val_loss'].append(avg_val_loss)
+                history["val_loss"].append(avg_val_loss)
 
                 if avg_val_loss < best_val_loss:
                     best_val_loss = avg_val_loss
@@ -174,7 +174,7 @@ def run_autoencoder_experiments(latent_dims_list, X_train, X_test, y_train, y_te
         
         final_mse = final_ae.compute_reconstruction_error(X_test)
         
-        svm_final = SVC(kernel='rbf')
+        svm_final = SVC(kernel="rbf")
         svm_final.fit(X_train_feat, y_train)
         final_acc = svm_final.score(X_test_feat, y_test)
         
@@ -183,8 +183,8 @@ def run_autoencoder_experiments(latent_dims_list, X_train, X_test, y_train, y_te
 
         if verbose:
             plot_training_loss(
-                history['train_loss'], 
-                history['val_loss'], 
+                history["train_loss"], 
+                history["val_loss"], 
                 title=f"AE Training (Dim {latent_dim})"
             )
 

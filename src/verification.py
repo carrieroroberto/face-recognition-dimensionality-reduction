@@ -39,7 +39,7 @@ def calculate_eer(fpr, tpr, thresholds):
     return fpr[idx], thresholds[idx]
 
 def run_verification_study(pca_features, ae_features, labels, images, image_shape, target_names):
-    feature_sets = {'PCA': pca_features, 'Autoencoder': ae_features}
+    feature_sets = {"PCA": pca_features, "Autoencoder": ae_features}
     results = {}
     all_scores = {}
 
@@ -54,25 +54,25 @@ def run_verification_study(pca_features, ae_features, labels, images, image_shap
         roc_auc = auc(fpr, tpr)
         eer, best_th = calculate_eer(fpr, tpr, thresholds)
 
-        results[f"{feat_name}_cosine"] = {'auc': roc_auc, 'eer': eer, 'threshold': best_th}
+        results[f"{feat_name}_cosine"] = {"auc": roc_auc, "eer": eer, "threshold": best_th}
         all_scores[feat_name] = {
-            'scores': scores, 'labels': y_true,
-            'idx1': idx1, 'idx2': idx2, 'threshold': best_th
+            "scores": scores, "labels": y_true,
+            "idx1": idx1, "idx2": idx2, "threshold": best_th
         }
 
         print(f"Cosine AUC: {roc_auc:.4f}, EER: {eer:.4f}")
 
-    best_method = max(results.items(), key=lambda x: x[1]['auc'])[0]
-    feat_name = best_method.split('_')[0]
+    best_method = max(results.items(), key=lambda x: x[1]["auc"])[0]
+    feat_name = best_method.split("_")[0]
     scores_data = all_scores[feat_name]
 
-    genuine_scores = scores_data['scores'][scores_data['labels'] == 1]
-    impostor_scores = scores_data['scores'][scores_data['labels'] == 0]
+    genuine_scores = scores_data["scores"][scores_data["labels"] == 1]
+    impostor_scores = scores_data["scores"][scores_data["labels"] == 0]
 
-    plot_similarity_distribution(genuine_scores, impostor_scores, feat_name, threshold=scores_data['threshold'])
+    plot_similarity_distribution(genuine_scores, impostor_scores, feat_name, threshold=scores_data["threshold"])
 
     if images is not None and image_shape is not None:
-        plot_verification_examples(images, scores_data['idx1'], scores_data['idx2'], scores_data['scores'], scores_data['labels'], image_shape[0], image_shape[1], n_examples=5)
+        plot_verification_examples(images, scores_data["idx1"], scores_data["idx2"], scores_data["scores"], scores_data["labels"], image_shape[0], image_shape[1], n_examples=5)
 
     if target_names is not None:
         for feat_name, feat_data in feature_sets.items():

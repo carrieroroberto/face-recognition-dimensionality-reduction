@@ -25,11 +25,11 @@ class DataPreprocessor:
         n_samples, h, w = images.shape
 
         self.data_info = {
-            'n_samples': n_samples,
-            'n_features': X.shape[1],
-            'n_classes': len(target_names),
-            'image_shape': (h, w),
-            'target_names': target_names
+            "n_samples": n_samples,
+            "n_features": X.shape[1],
+            "n_classes": len(target_names),
+            "image_shape": (h, w),
+            "target_names": target_names
         }
 
         print(f"Dataset loaded: {n_samples} samples, {len(target_names)} classes")
@@ -57,12 +57,12 @@ class DataPreprocessor:
         print(f"Test mean: {X_test_scaled.mean():.4f}, std: {X_test_scaled.std():.4f}")
 
         return {
-            'X_train': X_train_scaled,
-            'X_test': X_test_scaled,
-            'y_train': y_train,
-            'y_test': y_test,
-            'X_train_raw': X_train, 
-            'X_test_raw': X_test
+            "X_train": X_train_scaled,
+            "X_test": X_test_scaled,
+            "y_train": y_train,
+            "y_test": y_test,
+            "X_train_raw": X_train, 
+            "X_test_raw": X_test
         }
 
     def inverse_transform(self, X_scaled):

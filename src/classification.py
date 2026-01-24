@@ -14,13 +14,13 @@ def train_svm_with_grid_search(X_train, y_train, param_grid, cv_folds=config.CV_
     print(f"Cross-Validation: {cv_folds} folds")
 
     cv = StratifiedKFold(n_splits=cv_folds, shuffle=True)
-    svm = SVC(probability=True, class_weight='balanced')
+    svm = SVC(probability=True, class_weight="balanced")
 
     grid = GridSearchCV(
         estimator=svm, 
         param_grid=param_grid, 
         cv=cv, 
-        scoring='accuracy', 
+        scoring="accuracy", 
         n_jobs=-1, 
         verbose=True
     )
@@ -65,7 +65,7 @@ class NeuralNetwork(BaseEstimator, ClassifierMixin):
         
         for m in model.modules():
             if isinstance(m, nn.Linear):
-                nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain('relu'))
+                nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain("relu"))
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0.0)
         
@@ -91,7 +91,7 @@ class NeuralNetwork(BaseEstimator, ClassifierMixin):
 
         optimizer = optim.Adam(self.model_.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
-        self.history_ = {'loss': [], 'acc': []}
+        self.history_ = {"loss": [], "acc": []}
         self.model_.train()
 
         for epoch in range(self.epochs):
@@ -113,8 +113,8 @@ class NeuralNetwork(BaseEstimator, ClassifierMixin):
             
             avg_loss = total_loss / len(dataset)
             acc = correct / total
-            self.history_['loss'].append(avg_loss)
-            self.history_['acc'].append(acc)
+            self.history_["loss"].append(avg_loss)
+            self.history_["acc"].append(acc)
 
             if self.verbose and (epoch == 0 or (epoch + 1) % 20 == 0):
                 print(f"  Epoch {epoch+1}/{self.epochs} - Loss: {avg_loss:.4f} - Acc: {acc:.4f}")
@@ -147,7 +147,7 @@ def train_nn_with_grid_search(X_train, y_train, param_grid, cv_folds=config.CV_F
         estimator=model,
         param_grid=param_grid,
         cv=cv,
-        scoring='accuracy',
+        scoring="accuracy",
         n_jobs=-1, 
         verbose=True
     )
