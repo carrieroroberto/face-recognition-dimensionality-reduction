@@ -1,8 +1,8 @@
 # Comparative Analysis of Linear and Non-Linear Dimensionality Reduction for Face Recognition and Verification
 
-**Students:** Roberto Carriero, Massimiliano Leone
-**Course:** Statistical and Mathematical Methods for Artificial Intelligence - 2025/2026
-**Program:** M.Sc. Computer Science Engineering (Artificial Intelligence and Data Science) - Politecnico di Bari
+- **Students:** Roberto Carriero, Massimiliano Leone
+- **Course:** Statistical and Mathematical Methods for Artificial Intelligence - 2025/2026
+- **Program:** M.Sc. Computer Science Engineering (Artificial Intelligence and Data Science) - Politecnico di Bari
 
 ---
 
