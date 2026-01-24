@@ -1,9 +1,6 @@
-# src/pca.py
 import numpy as np
-from matplotlib import pyplot as plt
-import config
-from src.classification import train_svm_with_grid_search
-from src.utils import plot_scree_plot, plot_eigenfaces
+from sklearn.svm import SVC
+from src.utils import plot_scree_plot, plot_eigenfaces, plot_ablation_study
 
 class SVD_PCA:
     def __init__(self, n_components):
@@ -35,15 +32,14 @@ class SVD_PCA:
         return np.dot(X_reduced, self.components_) + self.mean_
 
 
-def run_pca_experiments(X_train, X_test, y_train, y_test, h, w, n_components_list,
-                        use_grid_search=False, verbose=True):
+def run_pca_experiments(n_components_list, X_train, X_test, y_train, y_test, h, w, verbose=True):
     results = {}
     explained_variances = []
     accuracies = []
 
     for n_comp in n_components_list:
         if verbose:
-            print(f"\n--- PCA con {n_comp} componenti ---")
+            print(f"\n--- PCA with {n_comp} components ---")
 
         pca = SVD_PCA(n_components=n_comp)
         pca.fit(X_train)
@@ -57,31 +53,20 @@ def run_pca_experiments(X_train, X_test, y_train, y_test, h, w, n_components_lis
         variance_explained = np.sum(pca.explained_variance_ratio_)
         explained_variances.append(variance_explained)
 
-        if n_comp in [10, 50, 100, 150]:
-            plot_eigenfaces(pca, h, w, n_top=min(12, n_comp))
-            plot_scree_plot(pca)
+        plot_eigenfaces(pca, h, w, n_top=min(12, n_comp))
+        plot_scree_plot(pca)
 
-        if use_grid_search:
-            svm_model, svm_cv_score, svm_params = train_svm_with_grid_search(
-                X_train_pca, y_train, verbose=False
-            )
-        else:
-            from sklearn.svm import SVC
-            svm_model = SVC(kernel='linear', C=1.0, random_state=config.RANDOM_STATE)
-            svm_model.fit(X_train_pca, y_train)
-            svm_cv_score = None
-            svm_params = {'kernel': 'linear', 'C': 1.0}
+        svm_model = SVC(kernel='rbf')
+        svm_model.fit(X_train_pca, y_train)
 
         y_pred = svm_model.predict(X_test_pca)
         acc = np.mean(y_pred == y_test)
         accuracies.append(acc)
 
         if verbose:
-            print(f"  Varianza spiegata: {variance_explained*100:.2f}%")
-            print(f"  Reconstruction MSE: {reconstruction_mse:.6f}")
-            if svm_cv_score:
-                print(f"  SVM CV Score: {svm_cv_score:.4f}")
-            print(f"  SVM Test Accuracy: {acc:.4f}")
+            print(f"   Variance explained: {variance_explained*100:.2f}%")
+            print(f"   Reconstruction MSE: {reconstruction_mse:.6f}")
+            print(f"   SVM Test Accuracy: {acc:.4f}")
 
         results[n_comp] = {
             "pca_model": pca,
@@ -90,35 +75,16 @@ def run_pca_experiments(X_train, X_test, y_train, y_test, h, w, n_components_lis
             "variance_explained": variance_explained,
             "reconstruction_mse": reconstruction_mse,
             "svm_model": svm_model,
-            "svm_cv_score": svm_cv_score,
-            "svm_params": svm_params,
             "svm_test_acc": acc
         }
 
-    plt.style.use('seaborn-v0_8-whitegrid')
-    plt.figure(figsize=config.PLOT_FIGSIZE_MEDIUM)
-
-    ax1 = plt.gca()
-    ax1.set_xlabel("Numero Componenti Principali")
-    ax1.set_ylabel("Test Accuracy", color='tab:blue')
-    ax1.plot(n_components_list, accuracies, marker='o', color='tab:blue',
-             linewidth=2, markersize=8, label='SVM Accuracy')
-    ax1.tick_params(axis='y', labelcolor='tab:blue')
-    ax1.grid(True, alpha=0.3)
-
-    ax2 = ax1.twinx()
-    ax2.set_ylabel("Varianza Spiegata Cumulativa", color='tab:orange')
-    ax2.plot(n_components_list, explained_variances, marker='s', color='tab:orange',
-             linewidth=2, markersize=8, linestyle='--', label='Varianza')
-    ax2.tick_params(axis='y', labelcolor='tab:orange')
-
-    plt.title("Ablation Study: PCA Components vs Performance", fontsize=14, fontweight='bold')
-    plt.tight_layout()
-    plt.savefig(f"{config.OUTPUT_PATH}/pca_ablation_study.png",
-                dpi=config.PLOT_DPI, bbox_inches='tight')
-    plt.close()
-
-    if verbose:
-        print(f"\nGrafico ablation study salvato in {config.OUTPUT_PATH}")
-
+    plot_ablation_study(
+        x_values=n_components_list,
+        accuracy_scores=accuracies,
+        secondary_metric_scores=explained_variances,
+        x_label="Number of Principal Components",
+        secondary_label="Cumulative Variance Explained",
+        title="Ablation Study: PCA Components vs Performance",
+    )
+    
     return results
