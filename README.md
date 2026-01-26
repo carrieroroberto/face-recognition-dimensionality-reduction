@@ -91,7 +91,7 @@ Key parameters in `config.py`:
 | `MIN_FACES_PER_PERSON` | 70 | Minimum images per identity |
 | `RESIZE_RATIO` | 0.5 | Image downscaling factor |
 | `TEST_SIZE` | 0.2 | Train-test split ratio |
-| `COMPONENTS_RANGE` | [25, 50, 75, 100, 150] | Latent dimensions to evaluate |
+| `COMPONENTS_RANGE` | [25, 50, 75, 100, 150] | PCA directions/AE latent dimensions to evaluate |
 | `AE_EPOCHS` | 200 | Autoencoder training epochs |
 | `CV_FOLDS` | 5 | Cross-validation folds |
 
