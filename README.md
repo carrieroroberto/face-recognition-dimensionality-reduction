@@ -1,5 +1,12 @@
 # Comparative Analysis of Linear and Non-Linear Dimensionality Reduction for Face Recognition and Verification
 
+[![Python](https://img.shields.io/badge/python-3.14+-blue)](https://www.python.org/)
+[![NumPy](https://img.shields.io/badge/numpy-1.24+-orange)](https://numpy.org/)
+[![Pandas](https://img.shields.io/badge/pandas-2.0+-blueviolet)](https://pandas.pydata.org/)
+[![PyTorch](https://img.shields.io/badge/pytorch-2.0+-red)](https://pytorch.org/)
+[![Matplotlib](https://img.shields.io/badge/matplotlib-3.7+-green)](https://matplotlib.org/)
+[![Scikit-learn](https://img.shields.io/badge/scikit--learn-1.3+-yellowgreen)](https://scikit-learn.org/)
+
 - **Students:** Roberto Carriero, Massimiliano Leone
 - **Course:** Statistical and Mathematical Methods for Artificial Intelligence - 2025/2026
 - **Program:** M.Sc. Computer Science Engineering (Artificial Intelligence and Data Science) - Politecnico di Bari
@@ -47,7 +54,7 @@ face-recognition-dimensionality-reduction/
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.14+
 - numpy >= 1.24.0, < 2.0.0
 - pandas >= 2.0.0
 - scipy >= 1.10.0
