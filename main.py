@@ -104,7 +104,7 @@ def main():
 
     # Select the best PCA configuration based on SVM accuracy
     best_pca_n = max(pca_results, key=lambda k: pca_results[k]["svm_test_acc"])
-    print(f"\nBest PCA: {best_pca_n} components (Acc: {pca_results[best_pca_n]["svm_test_acc"]:.4f})")
+    print(f"\nBest PCA: {best_pca_n} components (Acc: {pca_results[best_pca_n]['svm_test_acc']:.4f})")
 
     # Extract the best PCA model and transformed features
     final_pca_results = pca_results[best_pca_n]
@@ -123,7 +123,7 @@ def main():
 
     # Select the best Autoencoder configuration based on test accuracy
     best_ae_dim = max(ae_results, key=lambda k: ae_results[k]["test_acc"])
-    print(f"\nBest Autoencoder: {best_ae_dim} dimensions (Acc: {ae_results[best_ae_dim]["test_acc"]:.4f})")
+    print(f"\nBest Autoencoder: {best_ae_dim} dimensions (Acc: {ae_results[best_ae_dim]['test_acc']:.4f})")
 
     # Extract the best Autoencoder model and encoded features
     final_ae_results = ae_results[best_ae_dim]
@@ -259,7 +259,7 @@ def main():
 
     print("\nVerification Performance (AUC & EER):")
     for method, res in verification_results.items():
-        print(f"{method}: AUC={res["auc"]:.4f}, EER={res["eer"]:.4f}")
+        print(f"{method}: AUC={res['auc']:.4f}, EER={res['eer']:.4f}")
 
     # =========================================================================
     # PHASE 7: t-SNE VISUALIZATION

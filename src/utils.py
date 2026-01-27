@@ -308,12 +308,12 @@ def plot_multiclass_roc(roc_data, n_classes, target_names, title="ROC Curves"):
 
     # Plot micro-averaged ROC
     ax.plot(roc_data["micro"]["fpr"], roc_data["micro"]["tpr"],
-            label=f"Micro-average ROC (area = {roc_data["micro"]["auc"]:.2f})",
+            label=f"Micro-average ROC (area = {roc_data['micro']['auc']:.2f})",
             color="deeppink", linestyle=":", linewidth=3)
 
     # Plot macro-averaged ROC
     ax.plot(roc_data["macro"]["fpr"], roc_data["macro"]["tpr"],
-            label=f"Macro-average ROC (area = {roc_data["macro"]["auc"]:.2f})",
+            label=f"Macro-average ROC (area = {roc_data['macro']['auc']:.2f})",
             color="navy", linestyle=":", linewidth=3)
 
     # Define colors for per-class curves
@@ -325,7 +325,7 @@ def plot_multiclass_roc(roc_data, n_classes, target_names, title="ROC Curves"):
     # Plot per-class ROC curves
     for i, color in zip(classes_to_plot, colors):
         ax.plot(roc_data[i]["fpr"], roc_data[i]["tpr"], color=color, lw=1.5, alpha=0.7,
-                label=f"ROC {target_names[i]} (area = {roc_data[i]["auc"]:.2f})")
+                label=f"ROC {target_names[i]} (area = {roc_data[i]['auc']:.2f})")
 
     # Add diagonal reference line (random classifier)
     ax.plot([0, 1], [0, 1], "k--", lw=1)
@@ -589,20 +589,20 @@ def print_dataset_statistics(stats):
         stats: Dictionary of statistics from compute_dataset_statistics
     """
     print("\nDATASET STATISTICS")
-    print(f"Total samples: {stats["n_samples"]}")
-    print(f"Number of features: {stats["n_features"]}")
-    print(f"Number of classes: {stats["n_classes"]}")
+    print(f"Total samples: {stats['n_samples']}")
+    print(f"Number of features: {stats['n_features']}")
+    print(f"Number of classes: {stats['n_classes']}")
 
     print(f"\nPixel statistics")
-    print(f"Range: [{stats["pixel_min"]:.4f}, {stats["pixel_max"]:.4f}]")
-    print(f"Mean: {stats["pixel_mean"]:.4f}")
-    print(f"Std: {stats["pixel_std"]:.4f}")
+    print(f"Range: [{stats['pixel_min']:.4f}, {stats['pixel_max']:.4f}]")
+    print(f"Mean: {stats['pixel_mean']:.4f}")
+    print(f"Std: {stats['pixel_std']:.4f}")
 
     print(f"\nClass distribution")
-    print(f"Min samples per class: {stats["min_samples_per_class"]}")
-    print(f"Max samples per class: {stats["max_samples_per_class"]}")
-    print(f"Mean samples per class: {stats["mean_samples_per_class"]:.1f}")
-    print(f"Std: {stats["std_samples_per_class"]:.1f}")
+    print(f"Min samples per class: {stats['min_samples_per_class']}")
+    print(f"Max samples per class: {stats['max_samples_per_class']}")
+    print(f"Mean samples per class: {stats['mean_samples_per_class']:.1f}")
+    print(f"Std: {stats['std_samples_per_class']:.1f}")
 
 
 def print_metrics_summary(metrics_dict, model_name="Model"):
@@ -616,22 +616,22 @@ def print_metrics_summary(metrics_dict, model_name="Model"):
     print(f"\n--- METRICS SUMMARY: {model_name} ---")
 
     if "best_params" in metrics_dict:
-        print(f"Best Params: {metrics_dict["best_params"]}")
+        print(f"Best Params: {metrics_dict['best_params']}")
 
-    print(f"Accuracy: {metrics_dict["accuracy"]:.4f}")
+    print(f"Accuracy: {metrics_dict['accuracy']:.4f}")
 
     if "confidence_interval" in metrics_dict:
         ci = metrics_dict["confidence_interval"]
-        print(f"95% Confidence Interval: [{ci["lower_bound"]:.4f}, {ci["upper_bound"]:.4f}]")
+        print(f"95% Confidence Interval: [{ci['lower_bound']:.4f}, {ci['upper_bound']:.4f}]")
 
-    print(f"Macro F1: {metrics_dict["f1_macro"]:.4f}")
-    print(f"Weighted F1: {metrics_dict["f1_weighted"]:.4f}")
+    print(f"Macro F1: {metrics_dict['f1_macro']:.4f}")
+    print(f"Weighted F1: {metrics_dict['f1_weighted']:.4f}")
 
     if "cv_score" in metrics_dict:
-        print(f"CV Score (Val): {metrics_dict["cv_score"]:.4f}")
+        print(f"CV Score (Val): {metrics_dict['cv_score']:.4f}")
 
     if "roc_auc_macro" in metrics_dict:
-        print(f"ROC AUC (Macro): {metrics_dict["roc_auc_macro"]:.4f}")
+        print(f"ROC AUC (Macro): {metrics_dict['roc_auc_macro']:.4f}")
 
 
 def export_metrics_to_csv(df_metrics):
