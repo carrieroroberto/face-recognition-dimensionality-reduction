@@ -15,6 +15,7 @@ import os
 import joblib
 import torch
 import numpy as np
+import pandas as pd
 import config
 from src.preprocessing import DataPreprocessor
 from src.pca import run_pca_experiments
@@ -22,9 +23,10 @@ from src.autoencoder import run_autoencoder_experiments
 from src.classification import (train_svm_with_grid_search, train_nn_with_grid_search)
 from src.verification import run_verification_study
 from src.metrics import (compute_classification_metrics, compare_models_metrics, compute_roc_curves, calculate_confidence_intervals)
-from src.utils import (plot_dataset_stats, plot_reconstruction_comparison, plot_training_loss, plot_confusion_matrix, plot_tsne_comparison, plot_multiclass_roc, save_model, compute_dataset_statistics, print_dataset_statistics, print_metrics_summary, export_metrics_to_csv)
+from src.utils import (plot_dataset_stats, plot_reconstruction_comparison, plot_training_loss, plot_confusion_matrix, plot_tsne_comparison, plot_multiclass_roc, save_model, compute_dataset_statistics, print_dataset_statistics, print_metrics_summary, export_metrics_to_csv, log_output)
 import warnings
 warnings.filterwarnings("ignore")
+log_output()
 
 def main():
     """
@@ -177,10 +179,7 @@ def main():
 
         # Generate predictions and probability scores
         y_pred_svm = best_svm.predict(X_te)
-        try:
-            y_score_svm = best_svm.predict_proba(X_te)
-        except:
-            y_score_svm = best_svm.decision_function(X_te)
+        y_score_svm = best_svm.predict_proba(X_te)
 
         # Compute comprehensive evaluation metrics
         metrics_svm = compute_classification_metrics(y_test, y_pred_svm, y_score_svm, target_names)
@@ -290,6 +289,33 @@ def main():
     print("Saving best PCA and Autoencoder models...")
 
     print("\nPipeline completed successfully.\n")
+    
+    # =========================================================================
+    # EXTRA: CLASSIFICATION BEFORE DIMENSIONALITY REDUCTION
+    # Compare SVM and NN (best tuned models) on original high-dimensional data
+    # =========================================================================
+    # SVM
+    print("\nEXTRA: CLASSIFICATION ON ORIGINAL HIGH-DIMENSIONAL DATA")
+    best_svm.fit(X_train, y_train)
+    y_pred_orig_svm = best_svm.predict(X_test)
+    y_score_orig_svm = best_svm.predict_proba(X_test)
+    metrics_orig_svm = compute_classification_metrics(y_test, y_pred_orig_svm, y_score_orig_svm, target_names)
+    print_metrics_summary(metrics_orig_svm, "SVM on original data")
+    
+    # Neural Network
+    best_nn.fit(X_train, y_train)
+    y_pred_orig_nn = best_nn.predict(X_test)
+    y_score_orig_nn = best_nn.predict_proba(X_test)
+    metrics_orig_nn = compute_classification_metrics(y_test, y_pred_orig_nn, y_score_orig_nn, target_names)
+    print_metrics_summary(metrics_orig_nn, "NN on original data")
+    
+    # Export original data metrics to CSV
+    df = pd.DataFrame([
+        {"model": "SVM_original", **metrics_orig_svm},
+        {"model": "NN_original", **metrics_orig_nn}
+    ])
+    export_metrics_to_csv(df, original=True)
+
 
 if __name__ == "__main__":
     main()

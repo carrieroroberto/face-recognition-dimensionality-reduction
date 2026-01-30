@@ -21,6 +21,7 @@ from sklearn.manifold import TSNE
 from sklearn.metrics.pairwise import cosine_similarity
 from itertools import cycle
 import config
+import sys
 
 
 def plot_dataset_stats(data_dict):
@@ -634,14 +635,15 @@ def print_metrics_summary(metrics_dict, model_name="Model"):
         print(f"ROC AUC (Macro): {metrics_dict['roc_auc_macro']:.4f}")
 
 
-def export_metrics_to_csv(df_metrics):
+def export_metrics_to_csv(df_metrics, original=False):
     """
     Export metrics DataFrame to CSV file.
 
     Args:
         df_metrics: pandas DataFrame containing model comparison metrics
     """
-    save_path = os.path.join(config.MODELS_PATH, "classification_metrics.csv")
+    filename = "classification_metrics_original.csv" if original else "classification_metrics.csv"
+    save_path = os.path.join(config.MODELS_PATH, filename)
     df_metrics.to_csv(save_path, index=False)
 
 
@@ -666,3 +668,22 @@ def save_model(model, name):
         filename = f"{name}.joblib"
         path = os.path.join(config.MODELS_PATH, filename)
         joblib.dump(model, path)
+
+
+def log_output():
+    """
+    Redirect stdout and stderr to a log file.
+    """
+    log_file = open("results/log.txt", "w")
+    terminal = sys.stdout
+    class DualOutput:
+        def __init__(self, terminal, logfile):
+            self.terminal = terminal
+            self.logfile = logfile
+        def write(self, message):
+            self.terminal.write(message)
+            self.logfile.write(message)
+        def flush(self):
+            self.terminal.flush()
+            self.logfile.flush()
+    sys.stdout = sys.stderr = DualOutput(terminal, log_file)
