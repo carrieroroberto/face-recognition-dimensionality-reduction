@@ -36,7 +36,7 @@ def plot_dataset_stats(data_dict):
                    and image shape information
     """
     plt.style.use("seaborn-v0_8-whitegrid")
-    target_names = data_dict["target_names"]
+    target_ID = data_dict["target_ID"]
     y_train = data_dict["y_train"]
     h, w = data_dict["image_shape"]
     X_train = data_dict["X_train"]
@@ -45,7 +45,7 @@ def plot_dataset_stats(data_dict):
     _, ax = plt.subplots(figsize=(12, 6))
     unique, counts = np.unique(y_train, return_counts=True)
 
-    names_subset = [target_names[i] for i in unique]
+    names_subset = [target_ID[i] for i in unique]
 
     sns.barplot(x=names_subset, y=counts, palette="viridis", ax=ax)
     ax.set_title("Class Distribution (Train Set)", fontsize=12, fontweight="bold")
@@ -210,7 +210,7 @@ def plot_reconstruction_comparison(original, pca_rec, ae_rec, h, w, n_images=5):
     plt.close()
 
 
-def plot_confusion_matrix(y_true, y_pred, target_names, model_name):
+def plot_confusion_matrix(y_true, y_pred, target_ID, model_name):
     """
     Generate a confusion matrix heatmap for classification results.
 
@@ -220,7 +220,7 @@ def plot_confusion_matrix(y_true, y_pred, target_names, model_name):
     Args:
         y_true: Ground truth labels
         y_pred: Predicted labels
-        target_names: List of class names
+        target_ID: List of class names
         model_name: Model identifier for the title
     """
     plt.style.use("seaborn-v0_8-whitegrid")
@@ -228,7 +228,7 @@ def plot_confusion_matrix(y_true, y_pred, target_names, model_name):
 
     _, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
-                xticklabels=target_names, yticklabels=target_names, ax=ax)
+                xticklabels=target_ID, yticklabels=target_ID, ax=ax)
 
     ax.set_title(f"Confusion Matrix: {model_name}", fontsize=12, fontweight="bold")
     ax.set_ylabel("True Class", fontsize=11)
@@ -244,7 +244,7 @@ def plot_confusion_matrix(y_true, y_pred, target_names, model_name):
     plt.close()
 
 
-def plot_tsne_comparison(pca_features, ae_features, labels, target_names):
+def plot_tsne_comparison(pca_features, ae_features, labels, target_ID):
     """
     Compare PCA and Autoencoder features using t-SNE visualization.
 
@@ -255,7 +255,7 @@ def plot_tsne_comparison(pca_features, ae_features, labels, target_names):
         pca_features: PCA-reduced feature array
         ae_features: Autoencoder-reduced feature array
         labels: Class labels for coloring
-        target_names: List of class names for legend
+        target_ID: List of class names for legend
     """
     plt.style.use("seaborn-v0_8-whitegrid")
     _, axes = plt.subplots(1, 2, figsize=(16, 8))
@@ -274,7 +274,7 @@ def plot_tsne_comparison(pca_features, ae_features, labels, target_names):
             idx = np.where(labels == label_idx)
             color = colors[j % len(colors)]
             axes[i].scatter(X_2d[idx, 0], X_2d[idx, 1],
-                            label=target_names[label_idx],
+                            label=target_ID[label_idx],
                             color=color, alpha=0.7, s=30)
 
         axes[i].set_title(f"t-SNE: {name} Features", fontsize=12, fontweight="bold")
@@ -291,7 +291,7 @@ def plot_tsne_comparison(pca_features, ae_features, labels, target_names):
     plt.close()
 
 
-def plot_multiclass_roc(roc_data, n_classes, target_names, title="ROC Curves"):
+def plot_multiclass_roc(roc_data, n_classes, target_ID, title="ROC Curves"):
     """
     Plot multi-class ROC curves with micro and macro averages.
 
@@ -301,7 +301,7 @@ def plot_multiclass_roc(roc_data, n_classes, target_names, title="ROC Curves"):
     Args:
         roc_data: Dictionary containing FPR, TPR, and AUC for each class
         n_classes: Number of classes
-        target_names: List of class names
+        target_ID: List of class names
         title: Plot title
     """
     plt.style.use("seaborn-v0_8-whitegrid")
@@ -326,7 +326,7 @@ def plot_multiclass_roc(roc_data, n_classes, target_names, title="ROC Curves"):
     # Plot per-class ROC curves
     for i, color in zip(classes_to_plot, colors):
         ax.plot(roc_data[i]["fpr"], roc_data[i]["tpr"], color=color, lw=1.5, alpha=0.7,
-                label=f"ROC {target_names[i]} (area = {roc_data[i]['auc']:.2f})")
+                label=f"ROC {target_ID[i]} (area = {roc_data[i]['auc']:.2f})")
 
     # Add diagonal reference line (random classifier)
     ax.plot([0, 1], [0, 1], "k--", lw=1)
@@ -457,7 +457,7 @@ def plot_verification_examples(images, pair_idx1, pair_idx2, scores, labels,
     plt.close()
 
 
-def plot_similarity_heatmap(features, labels, target_names, method_name,
+def plot_similarity_heatmap(features, labels, target_ID, method_name,
                             max_classes=8):
     """
     Generate inter-class similarity heatmap.
@@ -468,7 +468,7 @@ def plot_similarity_heatmap(features, labels, target_names, method_name,
     Args:
         features: Feature array of shape (n_samples, n_features)
         labels: Class labels
-        target_names: List of class names
+        target_ID: List of class names
         method_name: Feature extraction method name
         max_classes: Maximum number of classes to display
     """
@@ -483,7 +483,7 @@ def plot_similarity_heatmap(features, labels, target_names, method_name,
     for label in unique_labels:
         class_features = features[labels == label]
         class_centers.append(class_features.mean(axis=0))
-        class_names.append(target_names[label])
+        class_names.append(target_ID[label])
 
     # Compute pairwise similarity matrix
     similarity_matrix = cosine_similarity(np.array(class_centers))
@@ -546,7 +546,7 @@ def plot_ablation_study(x_values, accuracy_scores, secondary_metric_scores, x_la
     plt.close()
 
 
-def compute_dataset_statistics(X, y, target_names):
+def compute_dataset_statistics(X, y, target_ID):
     """
     Compute comprehensive statistics for the dataset.
 
@@ -556,7 +556,7 @@ def compute_dataset_statistics(X, y, target_names):
     Args:
         X: Feature array of shape (n_samples, n_features)
         y: Label array
-        target_names: List of class names
+        target_ID: List of class names
 
     Returns:
         dict: Dictionary containing various dataset statistics
@@ -566,12 +566,12 @@ def compute_dataset_statistics(X, y, target_names):
     stats = {
         "n_samples": X.shape[0],
         "n_features": X.shape[1],
-        "n_classes": len(target_names),
+        "n_classes": len(target_ID),
         "pixel_min": X.min(),
         "pixel_max": X.max(),
         "pixel_mean": X.mean(),
         "pixel_std": X.std(),
-        "class_distribution": dict(zip([target_names[i] for i in unique], counts)),
+        "class_distribution": dict(zip([target_ID[i] for i in unique], counts)),
         "class_counts": counts,
         "min_samples_per_class": counts.min(),
         "max_samples_per_class": counts.max(),

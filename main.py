@@ -3,7 +3,7 @@ Project: Comparative Analysis of Linear and Non-Linear Dimensionality Reduction 
 Students: Roberto Carriero, Massimiliano Leone
 
 This module orchestrates the complete machine learning workflow including:
-- Data loading and preprocessing from the LFW dataset
+- Data loading and preprocessing from the Olivetti Faces dataset
 - Exploratory data analysis with visualization
 - Ablation study comparing PCA vs Autoencoder for dimensionality reduction
 - Classification experiments using SVM and Neural Network classifiers
@@ -44,14 +44,14 @@ def main():
     """
     # =========================================================================
     # PHASE 1: DATA LOADING AND PREPROCESSING
-    # Load the LFW dataset and apply preprocessing transformations
+    # Load the Olivetti Faces dataset and apply preprocessing transformations
     # =========================================================================
     print("\n1. DATA LOADING AND PREPROCESSING")
     preprocessor = DataPreprocessor()
-    X, y, _, target_names = preprocessor.load_dataset()
+    X, y, _, target_ID = preprocessor.load_dataset()
 
     # Compute and display dataset statistics for initial analysis
-    stats = compute_dataset_statistics(X, y, target_names)
+    stats = compute_dataset_statistics(X, y, target_ID)
     print_dataset_statistics(stats)
 
     # Apply preprocessing: normalization and train/test split
@@ -80,7 +80,7 @@ def main():
     eda_data = {
         "X_train": X_train_raw,
         "y_train": y_train,
-        "target_names": target_names,
+        "target_ID": target_ID,
         "image_shape": (h, w)
     }
 
@@ -182,7 +182,7 @@ def main():
         y_score_svm = best_svm.predict_proba(X_te)
 
         # Compute comprehensive evaluation metrics
-        metrics_svm = compute_classification_metrics(y_test, y_pred_svm, y_score_svm, target_names)
+        metrics_svm = compute_classification_metrics(y_test, y_pred_svm, y_score_svm, target_ID)
         metrics_svm["cv_score"] = svm_cv_score
         metrics_svm["best_params"] = best_svm_params
         metrics_svm["confidence_interval"] = calculate_confidence_intervals(y_test, y_pred_svm)
@@ -210,14 +210,14 @@ def main():
         # Generate ROC curves for both classifiers
         print(f"Generating SVM ROC curves for {feat_name}...")
         roc_data_svm = compute_roc_curves(y_test, y_score_svm, n_classes)
-        plot_multiclass_roc(roc_data_svm, n_classes, target_names, title=f"SVM ROC {feat_name}")
+        plot_multiclass_roc(roc_data_svm, n_classes, target_ID, title=f"SVM ROC {feat_name}")
 
         print(f"Generating NN ROC curves for {feat_name}...")
         roc_data_nn = compute_roc_curves(y_test, y_score_nn, n_classes)
-        plot_multiclass_roc(roc_data_nn, n_classes, target_names, title=f"NN ROC {feat_name}")
+        plot_multiclass_roc(roc_data_nn, n_classes, target_ID, title=f"NN ROC {feat_name}")
 
         # Compute comprehensive evaluation metrics
-        metrics_nn = compute_classification_metrics(y_test, y_pred_nn, y_score_nn, target_names)
+        metrics_nn = compute_classification_metrics(y_test, y_pred_nn, y_score_nn, target_ID)
         metrics_nn["val_score"] = nn_cv_score
         metrics_nn["best_params"] = best_nn_params
         metrics_nn["confidence_interval"] = calculate_confidence_intervals(y_test, y_pred_nn)
@@ -229,7 +229,7 @@ def main():
         # Generate confusion matrix for the best performing model
         best_model_name = "SVM" if metrics_svm["accuracy"] > metrics_nn["accuracy"] else "NN"
         best_pred = y_pred_svm if best_model_name == "SVM" else y_pred_nn
-        plot_confusion_matrix(y_test, best_pred, target_names, f"{best_model_name}_{feat_name}")
+        plot_confusion_matrix(y_test, best_pred, target_ID, f"{best_model_name}_{feat_name}")
 
     # =========================================================================
     # PHASE 5: MODEL COMPARISON AND RESULTS EXPORT
@@ -253,7 +253,7 @@ def main():
         labels=y_test,
         images=X_test_raw,
         image_shape=(h, w),
-        target_names=target_names
+        target_names=target_ID
     )
 
     print("\nVerification Performance (AUC & EER):")
@@ -275,7 +275,7 @@ def main():
         X_train_pca[idx_tsne],
         X_train_ae[idx_tsne],
         y_train[idx_tsne],
-        target_names
+        target_ID
     )
 
     # =========================================================================
@@ -299,14 +299,14 @@ def main():
     best_svm.fit(X_train, y_train)
     y_pred_orig_svm = best_svm.predict(X_test)
     y_score_orig_svm = best_svm.predict_proba(X_test)
-    metrics_orig_svm = compute_classification_metrics(y_test, y_pred_orig_svm, y_score_orig_svm, target_names)
+    metrics_orig_svm = compute_classification_metrics(y_test, y_pred_orig_svm, y_score_orig_svm, target_ID)
     print_metrics_summary(metrics_orig_svm, "SVM on original data")
     
     # Neural Network
     best_nn.fit(X_train, y_train)
     y_pred_orig_nn = best_nn.predict(X_test)
     y_score_orig_nn = best_nn.predict_proba(X_test)
-    metrics_orig_nn = compute_classification_metrics(y_test, y_pred_orig_nn, y_score_orig_nn, target_names)
+    metrics_orig_nn = compute_classification_metrics(y_test, y_pred_orig_nn, y_score_orig_nn, target_ID)
     print_metrics_summary(metrics_orig_nn, "NN on original data")
     
     # Export original data metrics to CSV

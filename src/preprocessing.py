@@ -1,5 +1,5 @@
 """
-This module handles loading and preprocessing of the Labeled Faces in the Wild (LFW)
+This module handles loading and preprocessing of the Olivetti Faces
 dataset.
 
 It provides functionality for:
@@ -8,10 +8,10 @@ It provides functionality for:
 - Applying z-score standardization for zero mean and unit variance
 - Splitting data into training and test sets with stratified sampling
 """
-
+import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import fetch_lfw_people
+from sklearn.datasets import fetch_olivetti_faces
 import config
 
 
@@ -32,35 +32,25 @@ class DataPreprocessor:
         self.scaler = None
         self.data_info = {}
 
-    def load_dataset(self, min_faces=config.MIN_FACES_PER_PERSON, resize=config.RESIZE_RATIO):
+    def load_dataset(self):
         """
-        Load the LFW face dataset with specified parameters.
-
-        Fetches the Labeled Faces in the Wild dataset from scikit-learn,
+        Fetches the Olivetti Faces dataset from scikit-learn,
         filtering to include only individuals with a minimum number of images.
 
-        Args:
-            min_faces: Minimum number of images required per person
-            resize: Scaling factor for image dimensions (0.5 = half size)
-
         Returns:
-            tuple: (X, y, images, target_names) containing flattened features,
+            tuple: (X, y, images, target_ID) containing flattened features,
                    labels, image arrays, and class name mapping
         """
-        print(f"Loading LFW dataset (min_faces={min_faces}, resize={resize})...")
+        print(f"Loading Olivetti Faces dataset...")
 
         # Fetch dataset with specified criteria
-        lfw_people = fetch_lfw_people(
-            min_faces_per_person=min_faces,
-            resize=resize,
-            color=False  # Grayscale images
-        )
+        olivetti_people = fetch_olivetti_faces(shuffle=True)
 
         # Extract data components
-        X = lfw_people.data  # Flattened pixel arrays
-        y = lfw_people.target  # Integer class labels
-        target_names = lfw_people.target_names  # Person names
-        images = lfw_people.images  # 2D image arrays
+        X = olivetti_people.data  # Flattened pixel arrays
+        y = olivetti_people.target  # Integer class labels
+        target_ID = [f"Person {i}" for i in np.unique(y)]  # Person ID
+        images = olivetti_people.images  # 2D image arrays
 
         n_samples, h, w = images.shape
 
@@ -68,15 +58,15 @@ class DataPreprocessor:
         self.data_info = {
             "n_samples": n_samples,
             "n_features": X.shape[1],
-            "n_classes": len(target_names),
+            "n_classes": len(np.unique(y)),
             "image_shape": (h, w),
-            "target_names": target_names
+            "target_ID": target_ID
         }
 
-        print(f"Dataset loaded: {n_samples} samples, {len(target_names)} classes")
+        print(f"Dataset loaded: {n_samples} samples, {len(np.unique(y))} classes")
         print(f"Image shape: {h}x{w} = {X.shape[1]} features")
 
-        return X, y, images, target_names
+        return X, y, images, target_ID
 
     def preprocess_data(self, X, y, test_size=config.TEST_SIZE):
         """

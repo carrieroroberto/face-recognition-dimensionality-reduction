@@ -14,7 +14,7 @@ from sklearn.metrics import (
 from sklearn.preprocessing import label_binarize
 
 
-def compute_classification_metrics(y_true, y_pred, y_score=None, target_names=None):
+def compute_classification_metrics(y_true, y_pred, y_score=None, target_ID=None):
     """
     Compute comprehensive classification metrics for model evaluation.
 
@@ -26,7 +26,7 @@ def compute_classification_metrics(y_true, y_pred, y_score=None, target_names=No
         y_true: Ground truth labels array
         y_pred: Predicted labels array
         y_score: Optional probability scores for ROC-AUC computation
-        target_names: Optional list of class names for detailed report
+        target_ID: Optional list of class names for detailed report
 
     Returns:
         dict: Dictionary containing all computed metrics including confusion matrix
@@ -61,8 +61,8 @@ def compute_classification_metrics(y_true, y_pred, y_score=None, target_names=No
             metrics["roc_auc_error"] = str(e)
 
     # Generate detailed per-class classification report
-    if target_names is not None:
-        report_dict = classification_report(y_true, y_pred, target_names=target_names, output_dict=True, zero_division=0)
+    if target_ID is not None:
+        report_dict = classification_report(y_true, y_pred, target_names=target_ID, output_dict=True, zero_division=0)
         metrics["classification_report"] = report_dict
 
     return metrics
