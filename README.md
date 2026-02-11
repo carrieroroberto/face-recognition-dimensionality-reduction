@@ -30,7 +30,7 @@ This project provides an empirical comparison between **PCA** (Principal Compone
 2. **Dimensionality Reduction**: Train PCA (via SVD) and Autoencoder models across multiple latent dimensions
 3. **Classification**: Grid search hyperparameter tuning with 5-fold stratified cross-validation for SVM and NN classifiers
 4. **Verification**: Generate genuine/impostor pairs, compute cosine similarity, evaluate AUC and EER
-5. **Visualization**: t-SNE projections, confusion matrices, ROC curves, reconstruction comparisons
+5. **Visualization**: confusion matrices, ROC curves, reconstruction comparisons
 
 ## Project Structure
 
@@ -50,6 +50,7 @@ face-recognition-dimensionality-reduction/
 └── results/
     ├── figures/           # Generated plots
     └── models/            # Saved trained models
+    └── presentation/      # Presentation slides
 ```
 
 ## Requirements
@@ -106,7 +107,7 @@ Key parameters in `config.py`:
 
 - **Models**: Saved PCA (.joblib) and Autoencoder (.pt) models
 - **Metrics**: Classification results exported to CSV
-- **Figures**: Eigenfaces, ROC curves, confusion matrices, t-SNE plots, verification analysis
+- **Figures**: Eigenfaces, ROC curves, confusion matrices, verification analysis
 
 ### Classification Metrics
 
@@ -116,3 +117,8 @@ Key parameters in `config.py`:
 | NN | Autoencoder | 0.8178 | 0.7849 | 0.8200 | 0.9720 | 0.7981 |
 | SVM | PCA | 0.8062 | 0.7423 | 0.8015 | 0.9800 | 0.8146 |
 | SVM | Autoencoder | 0.7984 | 0.7474 | 0.7939 | 0.9710 | 0.7786 |
+
+## Extra
+- Evaluation of classification metrics before dimensionality reduction
+- Validation of the results using an additional dataset: Olivetti Faces
+  
