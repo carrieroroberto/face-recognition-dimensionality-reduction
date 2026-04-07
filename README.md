@@ -13,6 +13,10 @@
 
 ---
 
+<img width="1770" height="858" alt="Screenshot 2026-04-07 163741" src="https://github.com/user-attachments/assets/d3a4240f-7321-4b1f-88d2-48f928d16640" />
+
+---
+
 ## Overview
 
 This project provides an empirical comparison between **PCA** (Principal Component Analysis) and **Autoencoders** for dimensionality reduction in face recognition and verification tasks. The study evaluates both linear and non-linear approaches on the Labeled Faces in the Wild (LFW) dataset, analyzing their effectiveness for classification and identity verification.
